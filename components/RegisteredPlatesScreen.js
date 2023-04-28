@@ -1,15 +1,30 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { StyleSheet, Text, FlatList, View, TextInput } from 'react-native';
+import { StyleSheet, Text, FlatList, View, TextInput ,TouchableOpacity, ImageBackground} from 'react-native';
+import { Card } from 'react-native-paper';
+import { Feather } from '@expo/vector-icons';
+import { Picker } from '@react-native-picker/picker';
 import Spinner from 'react-native-loading-spinner-overlay';
 import axios from "axios";
 import { BASE_URL } from "../config";
 import { AuthContext } from '../context/AuthContext';
+import ModalView from './modals/ModalView';
+import backgroundImage from '../assets/bg.jpg'; 
 
 const RegisteredPlatesScreen = () => {
-  const { isLoading } = useContext(AuthContext);
+  const { isLoading, userInfo} = useContext(AuthContext);
   const [registeredPlates, setRegisteredPlates] = useState([]);
   const [tableData, setTableData] = useState([]);
   const [searchText, setSearchText] = useState('');
+
+  const [visible, setVisible] = useState(false);
+  const [plateId, setPlateId] = useState(0);
+  const [fullname, setFullname] = useState('');
+  const [address, setAddress] = useState('');
+  const [contactNo, setContactNo] = useState('');
+  const [rfid, setRfid] = useState('');
+  const [plateNo, setPlateNo] = useState('');
+  const [licenseNo, setLicenseNo] = useState('');
+  const [options, setOptions] = useState([]);
 
   useEffect(() => {
     getRegisteredPlates();
@@ -29,6 +44,13 @@ const RegisteredPlatesScreen = () => {
 
   useEffect(() => {
     setTableData([...registeredPlates]);
+    axios.get(`${BASE_URL}/get-rfid.php`)
+    .then(response => {
+      setOptions(response.data);
+    })
+    .catch(error => {
+      console.log(error);
+    });
   }, [registeredPlates]);
 
   const handleSearch = (text) => {
@@ -47,70 +69,169 @@ const RegisteredPlatesScreen = () => {
   };
 
   const renderItem = ({ item }) => (
-    <View style={styles.row}>
-      <Text style={styles.cell}>{item.fullname}</Text>
-      <Text style={styles.cell}>{item.address}</Text>
-      <Text style={styles.cell}>{item.contact_no}</Text>
-      <Text style={styles.cell}>{item.plate_no}</Text>
-      <Text style={styles.cell}>{item.rfid}</Text>
-      <Text style={styles.cell}>{item.license_no}</Text>
-      <Text style={styles.cell}>{item.created_by}</Text>
-      <Text style={styles.cell}>{item.created_at}</Text>
-    </View>
+    <Card style={styles.item}>
+      <View style={styles.rowView}>
+        <View>
+          <Text style={styles.plate_no}>{item.plate_no}</Text>
+          <Text>Fullname: {item.fullname}</Text>
+          <Text>Contact No: {item.contact_no}</Text>
+          <Text>RFID: {item.rfid}</Text>
+          <Text>License No: {item.license_no}</Text>
+          <Text>Address: {item.address}</Text>
+          <Text>Added by: {item.created_by}</Text>
+          <Text>Date Added/Updated: {item.created_at}</Text>
+        </View>
+        <View style={styles.rowView}>
+          <Button
+            onPress={() => edit(item.id, item.fullname, item.contact_no, item.rfid, item.plate_no, item.address, item.license_no)}
+            icon="edit"
+            style={{ marginHorizontal: 16 }} />
+        </View>
+      </View>
+    </Card>
   );
 
+  const Button = ({ onPress, style, icon }) => (
+    <TouchableOpacity style={style} onPress={onPress}>
+      <Feather name={icon} size={24} />
+    </TouchableOpacity>
+  )
+  const edit = (id, fullname, contact_no, rfid, plate_no, address, license_no) => {
+    setVisible(true)
+    setPlateId(id)
+    setFullname(fullname)
+    setAddress(address)
+    setContactNo(contact_no)
+    setRfid(rfid)
+    setPlateNo(plate_no)
+    setLicenseNo(license_no)
+  }
+
+  const editPost = (id, fullname, contactNo, rfid, plateNo, address, licenseNo) => {
+    const params = {
+      id:id,
+      fullname: fullname,
+      plate_no: plateNo,
+      license_no: licenseNo,
+      address: address,
+      contact_no: contactNo,
+      rfid: rfid,
+      created_by: userInfo.username ?? 'unknown'
+    };
+    
+    axios.get(`${BASE_URL}/update-registered-plate.php`, { params })
+      .then(res => {
+    
+        alert(res.data.msg);
+        if(res.data.status){
+          setVisible(false)
+          getRegisteredPlates()
+        }
+      })
+      .catch(error => {
+        alert(error);
+      });
+  }
   return (
-    <View>
+    <ImageBackground source={backgroundImage} style={styles.background}>
     <Spinner visible={isLoading}/>
-      <View style={styles.container1}>
-          <Text style={styles.textDisplay}>
-           List of Registered Plates</Text> 
-      </View>
-      <View style={styles.container2}>
         <TextInput
           style={styles.searchBox}
           placeholder="Search"
           value={searchText}
           onChangeText={handleSearch}
         />
-        <TableHeader />
         <FlatList
           data={tableData}
           renderItem={renderItem}
           style={styles.table}
         />
-      </View>
+      <ModalView
+        visible={visible}
+        title="Edit Registered Plate"
+        onDismiss={() => setVisible(false)}
+        onSubmit={() => {
+          if (plateId) {
+            editPost(plateId, fullname, contactNo, rfid, plateNo, address, licenseNo)
+          } 
+        }}
+        cancelable
+      >
+        <Text
+        style={styles.modalLabel}
+        >Fullname:</Text>
+        <TextInput
+        style={styles.modalTextInput}
+          label="Fullname"
+          value={fullname}
+          onChangeText={(text) => setFullname(text)}
+          placeholder="Enter fullname"
+          placeholderTextColor="#003f5c"
+          mode="outlined"
+        />
 
-  </View>
+        <Text>Address:</Text>
+        <TextInput
+        style={styles.modalTextInput}
+          label="Address"
+          value={address}
+          onChangeText={(text) => setAddress(text)}
+           placeholder="Enter address"
+          placeholderTextColor="#003f5c"
+          mode="outlined"
+        />
+        <Text>Contact Number:</Text>
+        <TextInput
+        style={styles.modalTextInput}
+          label="Contact No."
+          value={contactNo}
+          onChangeText={(text) => setContactNo(text)}
+           placeholder="Enter contact no."
+          placeholderTextColor="#003f5c"
+          mode="outlined"
+        />   
+ 
+       <Text>RFID:</Text>
+         <Picker
+         style={styles.pickerView}
+          selectedValue={rfid}
+          onValueChange={itemValue => setRfid(itemValue)}
+          placeholder="Enter RFID"
+          mode='dropdown'
+        >
+        {options.map(option => (
+          <Picker.Item key={option.id} label={option.rfid} value={option.rfid} />
+        ))}
+      </Picker>
+      <Text>Plate number:</Text>
+        <TextInput
+        style={styles.modalTextInput}
+          label="Plate No."
+          value={plateNo}
+          onChangeText={(text) => setPlateNo(text)}
+           placeholder="Enter plate no."
+          placeholderTextColor="#003f5c"
+          mode="outlined"
+        />   
+        <Text>License number:</Text>
+        <TextInput
+        style={styles.modalTextInput}
+          label="License No."
+          value={licenseNo}
+          onChangeText={(text) => setLicenseNo(text)}
+           placeholder="Enter license no."
+          placeholderTextColor="#003f5c"
+          mode="outlined"
+        />   
+      </ModalView>
+  </ImageBackground>
   );
 }
-const TableHeader = () => {
-  return (
-    <View style={styles.header}>
-      <Text style={[styles.headerText, styles.module]}>Fullname</Text>
-      <Text style={[styles.headerText, styles.action]}>Address</Text>
-      <Text style={[styles.headerText, styles.action]}>Contact No.</Text>
-      <Text style={[styles.headerText, styles.action]}>Plate No.</Text>
-      <Text style={[styles.headerText, styles.action]}>RFID</Text>
-      <Text style={[styles.headerText, styles.action]}>License</Text>
-      <Text style={[styles.headerText, styles.action]}>Created By</Text>
-      <Text style={[styles.headerText, styles.action]}>Date Created</Text>
-    </View>
-  );
-};
 
 const styles = StyleSheet.create({
-  container1: {
-    backgroundColor: '#fff',
-    width: '100%',
-    height: '20%',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  container2: {
-    backgroundColor: 'lightgray',
-    width: '100%',
-    height: '80%'
+  background: {
+    flex: 1,
+    resizeMode: "cover",
   },
   textDisplay: {
     fontWeight: 'bold',
@@ -152,7 +273,6 @@ const styles = StyleSheet.create({
     marginEnd: 10
   },
   table: {
-    backgroundColor: '#f9f9f9',
     borderRadius: 4,
     padding: 16,
     shadowColor: '#000',
@@ -174,8 +294,45 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'gray',
     borderRadius: 8,
-    margin: 16,
+    marginLeft: 25,
+    marginRight: 25,
+    marginTop: 25,
     paddingHorizontal: 8,
-  }
+    backgroundColor:'#f9f9f9'
+  },
+  rowView: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginRight:'8%'
+  },
+  item: {
+    padding: 16,
+    margin: 16,
+    elevation: 4,
+    borderRadius: 8
+  },
+  plate_no: {
+    fontSize: 18,
+  },
+  modalTextInput: {
+    height: 40,
+    borderWidth: 1,
+    borderColor: 'gray',
+    borderRadius: 8,
+    marginTop: 5,
+    marginBottom: 16,
+    paddingHorizontal: 8,
+  },
+  modalLabel: {
+    marginTop: 16
+  },
+  pickerView: {
+    backgroundColor: "#ededed",
+    borderRadius: 30,
+    height: 30,
+    marginBottom: 10,
+    alignItems: "center",
+  },
 });
 export default RegisteredPlatesScreen;

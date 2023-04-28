@@ -1,51 +1,23 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { StyleSheet, Text, FlatList, View, TextInput, TouchableOpacity ,ImageBackground } from 'react-native';
+import { StyleSheet, Text, FlatList, View, TextInput, TouchableOpacity } from 'react-native';
 import Spinner from 'react-native-loading-spinner-overlay';
 import axios from "axios";
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import { BASE_URL } from "../config";
 import { AuthContext } from '../context/AuthContext';
-import backgroundImage from '../assets/bg.jpg'; 
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {DateTimePickerAndroid} from '@react-native-community/datetimepicker';
+
 
 const LogsScreen = () => {
   const { isLoading } = useContext(AuthContext);
   const [activityLogs, setActivityLogs] = useState([]);
   const [tableData, setTableData] = useState([]);
-  const [searchText, setSearchText] = useState('Search');
-  const [date, setDate] = useState(new Date());
-
-  const onChange = (event, selectedDate) => {
-    const currentDate = selectedDate;
-
-    let year = currentDate.getFullYear(); // get the year (yyyy)
-    let month = String(currentDate.getMonth() + 1).padStart(2, '0'); // get the month (mm) and pad with leading zero if necessary
-    let day = String(currentDate.getDate()).padStart(2, '0'); // get the day (dd) and pad with leading zero if necessary
-    let dateStr = year + '-' + month + '-' + day;
-    
-    setDate(currentDate);
-    setSearchText(dateStr);
-    handleSearch(dateStr);
-  };
-
-  const showMode = (currentMode) => {
-    DateTimePickerAndroid.open({
-      value: date,
-      onChange,
-      mode: currentMode,
-    });
-  };
-
-  const showDatepicker = () => {
-    showMode('date');
-  };
+  const [searchText, setSearchText] = useState('');
 
   useEffect(() => {
     getActivityLogs();
-    // const intervalId = setInterval(getActivityLogs, 5000);
-    // return () => clearInterval(intervalId);
+    const intervalId = setInterval(getActivityLogs, 5000);
+    return () => clearInterval(intervalId);
   }, []);
 
   const getActivityLogs = () => {
@@ -126,21 +98,27 @@ const LogsScreen = () => {
   );
 
   return (
-    <ImageBackground source={backgroundImage} style={styles.background}>
+    <View>
       <Spinner visible={isLoading}/>
+      <View style={styles.container1}>
+          <Text style={styles.textDisplay}>
+           List of Activities</Text> 
            <TouchableOpacity style={styles.exportButton} onPress={handleExport}>
-            <Icon name="file-export" size={25} color={'#fff'} />
+            <Text style={styles.exportButtonText}>Export</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={showDatepicker}>
-          <Text style={styles.searchBox}>
-            {searchText}
-          </Text>
-          </TouchableOpacity>
-   
+      </View>
+      <View style={styles.container2}>
+          <TextInput
+            style={styles.searchBox}
+            placeholder="Search"
+            value={searchText}
+            onChangeText={handleSearch}
+          />
+       
         <TableHeader />
-
-        <FlatList data={tableData} renderItem={renderItem} style={styles.table}  ListEmptyComponent={() => <Text style={styles.noDataDisplay}>NO DATA FOUND</Text>}/>
-      </ImageBackground>
+        <FlatList data={tableData} renderItem={renderItem} style={styles.table} />
+      </View>
+    </View>
   );
 }
 const TableHeader = () => {
@@ -155,22 +133,33 @@ const TableHeader = () => {
 };
 
 const styles = StyleSheet.create({
-  background: {
-    flex: 1,
-    resizeMode: "cover",
+  container1: {
+    backgroundColor: '#fff',
+    width: '100%',
+    height: '10%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  container2: {
+    backgroundColor: 'lightgray',
+    width: '100%',
+    height: '90%'
   },
   textDisplay: {
     fontWeight: 'bold',
     fontSize: 20,
   },
-
+  tableName: {
+    fontWeight: 'bold',
+    fontSize: 20,
+    paddingBottom: 10,
+  },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     backgroundColor: '#f2f2f2',
     padding: 8,
     marginBottom: 8,
-    margin: 10,
   },
   headerText: {
     fontWeight: 'bold',
@@ -208,8 +197,6 @@ const styles = StyleSheet.create({
     shadowRadius: 2.22,
 
     elevation: 3,
-    margin: 10,
-    marginTop: 4,
   },
   editButton: {
     color: 'blue',
@@ -220,25 +207,17 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'gray',
     borderRadius: 8,
-    margin: 10,
+    margin: 16,
     paddingHorizontal: 8,
-    paddingVertical: 8,
-    backgroundColor:'#f9f9f9'
   },
   exportButton: {
     padding: 10,
-    borderRadius: 10,
+    borderRadius: 20,
     backgroundColor: 'yellowgreen',
-    width: '15%',
-    alignSelf: 'flex-end',
-    alignItems: 'center',
-    marginTop: 10,
-    marginRight: 10
   },
-  noDataDisplay:{
-    alignSelf: 'center'
-  }
-
+  exportButtonText: {
+    color: 'white'
+  },
 });
 
 export default LogsScreen;

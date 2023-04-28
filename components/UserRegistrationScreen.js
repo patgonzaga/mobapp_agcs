@@ -1,7 +1,9 @@
+import { Button, TextInput } from 'react-native-paper';
 import React, { useState, useContext } from 'react';
-import { View, Text, Image, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet,ImageBackground } from 'react-native';
 import Spinner from 'react-native-loading-spinner-overlay/lib';
 import { AuthContext } from '../context/AuthContext';
+import backgroundImage from '../assets/bg.jpg'; 
 
 function UserRegistrationScreen({navigation}) {
 
@@ -24,76 +26,70 @@ function UserRegistrationScreen({navigation}) {
     }
   };
   return (
-    <View style={styles.container}>
+    <ImageBackground source={backgroundImage} style={styles.background}>
       <Spinner visible={isLoading}/>
-        <Image source={require('../assets/agcs_logo.png')} width={50} height={50}/>
+      <Image style={styles.logo} source={require('../assets/agcs_logo.png')} width={50} height={50} />
         <Text style={styles.welcome}>Register</Text>
         
-      <View style={styles.inputView}>
         <TextInput
-          style={styles.inputView}
+          style={styles.input}
           placeholder="Email"
           placeholderTextColor="#003f5c"
           onChangeText={(text) => setEmail(text)}
           value={email}
         /> 
-      </View>
-      <View style={styles.inputView}>
+      
         <TextInput
-          style={styles.inputView}
+          style={styles.input}
           placeholder="Username"
           placeholderTextColor="#003f5c"
           onChangeText={(text) => setUsername(text)}
           value={username}
         /> 
-      </View>
-       <View style={styles.inputView}>
+       
         <TextInput
-          style={styles.inputView}
+          style={styles.input}
           placeholder="Password"
           placeholderTextColor="#003f5c"
           secureTextEntry={true}
           onChangeText={(text) => setPassword(text)}
           value={password}
         /> 
-      </View>
-      <View style={styles.inputView}>
+      
         <TextInput
-          style={styles.inputView}
+          style={styles.input}
           placeholder="Confirm Password"
           placeholderTextColor="#003f5c"
           secureTextEntry={true}
           onChangeText={(text) => setConfirmPassword(text)}
           value={confirmPassword}
         /> 
-      </View>
 
-      <TouchableOpacity style={styles.registerBtn} onPress={handleRegisterPress}>
-        <Text style={styles.loginText}
-        >Register</Text> 
-      </TouchableOpacity>
+      <Button mode="contained" style={styles.button} onPress={handleRegisterPress}>
+      Register
+      </Button>
 
       <TouchableOpacity onPress={() => navigation.navigate('Login')}>
         <Text style={styles.switchText}>Already have an account? Login here</Text>
       </TouchableOpacity>
-    </View>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  background: {
     flex: 1,
-    backgroundColor: 'lightgreen',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  inputView: {
-    backgroundColor: "lightgray",
-    borderRadius: 30,
-    width: "70%",
-    height: 45,
-    marginBottom: 20,
+    resizeMode: "cover",
     alignItems: "center",
+    justifyContent: "center"
+  },
+  logo: {
+    width: 200,
+    height: 200,
+  },
+  input: {
+    width: '80%',
+    marginVertical: 5,
   },
   TextInput: {
     height: 50,
@@ -103,7 +99,7 @@ const styles = StyleSheet.create({
   },
   loginBtn:
   {
-    width:"70%",
+    width:"80%",
     borderRadius:25,
     height:50,
     alignItems:"center",
@@ -116,22 +112,28 @@ const styles = StyleSheet.create({
     marginTop: 30,
     marginBottom: 0,
   },
-  registerBtn:
-  {
-    width:"70%",
-    borderRadius:25,
-    height:50,
-    alignItems:"center",
-    justifyContent:"center",
-    backgroundColor:"green",
+  button: {
+    marginTop: 20,
+    width: '80%',
+    height: 50,
+    borderRadius: 15,
+    backgroundColor: '#018de5',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   welcome: {
-    marginBottom: 30,
-    fontSize: 30,
-    fontWeight: 'bold'
+    marginTop: 30,
+    marginBottom: 10,
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginLeft: '-60%',
+    color: 'lightblue'
   },
   switchText: {
     marginTop: 30,
+    marginBottom: 10,
+    color: '#018de5',
+    fontWeight: 'bold',
   },
 });
 

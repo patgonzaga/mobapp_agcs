@@ -1,124 +1,98 @@
-import { StatusBar } from 'expo-status-bar';
+import { Button, TextInput } from 'react-native-paper';
 import { useContext, useState } from 'react';
-import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableOpacity, ImageBackground } from 'react-native';
 import Spinner from 'react-native-loading-spinner-overlay/lib';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { AuthContext } from '../context/AuthContext';
+import backgroundImage from '../assets/bg.jpg'; 
 
- function LoginScreen({navigation }) {
-
-  const [username, setUsername] = useState(null);
-  const [password, setPassword] = useState(null);
-  const {isLoading, login} = useContext(AuthContext);
+function LoginScreen({ navigation }) {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const { isLoading, login } = useContext(AuthContext);
 
   const handleLogin = () => {
-    // Add your authentication logic here
     if (username && password) {
-        login(username, password);
+      login(username, password);
     } else {
       alert('Please fill out all fields.');
     }
-   
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Spinner visible={isLoading}/>
-        <Image style={styles.logo} source={require('../assets/agcs_logo.png')} width={50} height={50}/>
-        <Text style={styles.welcome}>Welcome User!</Text>
-      <View style={styles.inputView}>
-        <TextInput
-          style={styles.inputView}
-          placeholder="Username"
-          placeholderTextColor="#003f5c"
-          value={username}
-          onChangeText={setUsername}
-        /> 
-      </View>
-       <View style={styles.inputView}>
-        <TextInput
-          style={styles.inputView}
-          placeholder="Password"
-          placeholderTextColor="#003f5c"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry={true}
-        /> 
-      </View>
-      
-      <TouchableOpacity style={styles.loginBtn} 
-        onPress={handleLogin}>
-        <Text style={styles.loginText}>LOGIN</Text> 
-      </TouchableOpacity>
+    <ImageBackground source={backgroundImage} style={styles.background}>
+      <Spinner visible={isLoading} />
+      <Image style={styles.logo} source={require('../assets/agcs_logo.png')} width={50} height={50} />
+      <Text style={styles.welcome}>Welcome!</Text>
+      <TextInput
+        label="Username"
+        value={username}
+        onChangeText={setUsername}
+        style={styles.input}
+      />
+      <TextInput
+        label="Password"
+        value={password}
+        onChangeText={setPassword}
+        secureTextEntry={true}
+        style={styles.input}
+      />
+      <Button mode="contained" style={styles.button} onPress={handleLogin}>
+        Login
+      </Button>
 
-      <TouchableOpacity>
-        <Text style={styles.forgot_button}>Don't have an account?</Text> 
+      <TouchableOpacity onPress={() => navigation.navigate('Forgot password')}>
+        <Text style={styles.forgot}>Forgot Password?</Text>
       </TouchableOpacity>
-
-      <TouchableOpacity style={styles.registerBtn}
-      onPress={() => navigation.navigate('Signup')}>
-        <Text style={styles.loginText} >Signup</Text> 
+      <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
+        <Text style={styles.signup}>Don't have an account? Sign up</Text>
       </TouchableOpacity>
-
-      <StatusBar style="auto" />
-    </SafeAreaView>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  background: {
     flex: 1,
-    backgroundColor: 'lightgreen',
+    resizeMode: "cover",
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  logo: {
+    width: 200,
+    height: 200,
+  },
+  welcome: {
+    marginTop: 30,
+    marginBottom: 10,
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginLeft: '-55%',
+    color: 'lightblue'
+  },
+  input: {
+    width: '80%',
+    marginVertical: 10,
+  },
+  button: {
+    marginTop: 20,
+    width: '80%',
+    height: 50,
+    borderRadius: 15,
+    backgroundColor: '#018de5',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  inputView: {
-    backgroundColor: "lightgray",
-    borderRadius: 30,
-    width: "70%",
-    height: 45,
-    marginBottom: 20,
-    alignItems: "center",
-  },
-  TextInput: {
-    height: 50,
-    flex: 1,
-    padding: 10,
-    marginLeft: 20,
-  },
-  loginBtn:
-  {
-    width:"70%",
-    borderRadius:25,
-    height:50,
-    alignItems:"center",
-    justifyContent:"center",
-    marginTop:30,
-    backgroundColor:"green",
-  },
-  forgot_button: {
-    height: 30,
+  signup: {
     marginTop: 30,
-    marginBottom: 0,
+    marginBottom: 10,
+    color: '#018de5',
+    fontWeight: 'bold',
   },
-  registerBtn:
-  {
-    width:"70%",
-    borderRadius:25,
-    height:50,
-    alignItems:"center",
-    justifyContent:"center",
-    backgroundColor:"green",
+  forgot: {
+    marginTop: 50,
+    color: '#018de5',
+    fontWeight: 'bold',
   },
-  welcome: {
-    marginBottom: 30,
-    fontSize: 30,
-    fontWeight: 'bold'
-  },
-  logo:{
-    width: 250,
-    height: 250,
-  }
 });
 
 export default LoginScreen;

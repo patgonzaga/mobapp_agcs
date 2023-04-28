@@ -1,9 +1,11 @@
 import { useContext, useEffect, useState } from 'react';
-import { StyleSheet, Text,FlatList, View, TextInput, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text,FlatList, View, TextInput, TouchableOpacity,ImageBackground } from 'react-native';
 import Spinner from 'react-native-loading-spinner-overlay/lib';
 import { AuthContext } from '../../context/AuthContext';
 import { BASE_URL } from '../../config';
 import axios from "axios";
+import backgroundImage from '../../assets/bg.jpg'; 
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const UserListScreen = () => {
   const { isLoading } = useContext(AuthContext);
@@ -41,13 +43,13 @@ const UserListScreen = () => {
             style={[styles.button, styles.acceptButton]}
             onPress={() => handleUserAction('active',item.id)}
           >
-            <Text style={styles.buttonText}>Accept</Text>
+            <Icon name="check-bold" size={20} color={'#fff'} />
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.button, styles.rejectButton]}
             onPress={() => handleUserAction('rejected',item.id)}
           >
-            <Text style={styles.buttonText}>Reject</Text>
+            <Icon name="close-thick" size={20} color={'#fff'} />
           </TouchableOpacity>
         </View>
       )}
@@ -67,7 +69,7 @@ const UserListScreen = () => {
             style={[styles.button, styles.rejectButton]}
             onPress={() => handleUserAction('inactive',item.id)}
           >
-            <Text style={styles.buttonText}>Deactivate</Text>
+            <Icon name="power" size={20} color={'#fff'} />
           </TouchableOpacity>
         </View>
       )}
@@ -77,7 +79,7 @@ const UserListScreen = () => {
             style={[styles.button, styles.acceptButton]}
             onPress={() => handleUserAction('active',item.id)}
           >
-            <Text style={styles.buttonText}>Activate</Text>
+            <Icon name="power" size={20} color={'#fff'} />
           </TouchableOpacity>
         </View>
       )}
@@ -113,12 +115,9 @@ const UserListScreen = () => {
   };
 
   return (
-    <View>
+    <ImageBackground source={backgroundImage} style={styles.background}>
       <Spinner visible={isLoading} />
-      <View style={styles.container1}>
-        <Text style={styles.textDisplay}>List of Registered Plates</Text>
-      </View>
-      <View style={styles.container2}>
+    
         <TextInput
           style={styles.searchBox}
           placeholder="Search"
@@ -127,8 +126,7 @@ const UserListScreen = () => {
         />
         <TableHeader />
         <FlatList data={tableData} renderItem={renderItem} style={styles.table} />
-      </View>
-    </View>
+    </ImageBackground>
   );
 };
 
@@ -144,26 +142,28 @@ const TableHeader = () => {
 };
 
 const styles = StyleSheet.create({
-  container1: {
-    backgroundColor: '#fff',
-    width: '100%',
-    height: '20%',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  container2: {
-    backgroundColor: 'lightgray',
-    width: '100%',
-    height: '80%'
+  background: {
+    flex: 1,
+    resizeMode: "cover",
   },
   textDisplay: {
     fontWeight: 'bold',
     fontSize: 20,
   },
-  tableName: {
-    fontWeight: 'bold',
-    fontSize: 20,
-    paddingBottom: 10,
+  actionButtons: {
+    flexDirection: 'row',
+  },
+  actionButtons: {
+    flexDirection: 'row',
+  },
+  button: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 4,
+    marginEnd: 8,
+    height: 25,
+    width:25,
+    backgroundColor: '#018de5',
   },
   header: {
     flexDirection: 'row',
@@ -171,6 +171,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f2f2f2',
     padding: 8,
     marginBottom: 8,
+    margin: 10,
   },
   headerText: {
     fontWeight: 'bold',
@@ -208,6 +209,8 @@ const styles = StyleSheet.create({
     shadowRadius: 2.22,
 
     elevation: 3,
+    margin: 10,
+    marginTop: 4,
   },
   editButton: {
     color: 'blue',
@@ -218,17 +221,19 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'gray',
     borderRadius: 8,
-    margin: 16,
+    margin: 10,
     paddingHorizontal: 8,
+    backgroundColor:'#f9f9f9'
   },
-  actionButtons: {
-    flexDirection: 'row',
-  },
-  button: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 4,
-    marginEnd: 8,
+  exportButton: {
+    padding: 10,
+    borderRadius: 10,
+    backgroundColor: 'yellowgreen',
+    width: '15%',
+    alignSelf: 'flex-end',
+    alignItems: 'center',
+    marginTop: 10,
+    marginRight: 10
   },
   acceptButton: {
     backgroundColor: 'green',
@@ -240,5 +245,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
   },
+
 });
 export default UserListScreen;

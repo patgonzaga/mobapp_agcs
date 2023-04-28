@@ -8,39 +8,12 @@ import { BASE_URL } from "../config";
 import { AuthContext } from '../context/AuthContext';
 import backgroundImage from '../assets/bg.jpg'; 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {DateTimePickerAndroid} from '@react-native-community/datetimepicker';
 
 const LogsScreen = () => {
   const { isLoading } = useContext(AuthContext);
   const [activityLogs, setActivityLogs] = useState([]);
   const [tableData, setTableData] = useState([]);
-  const [searchText, setSearchText] = useState('Search');
-  const [date, setDate] = useState(new Date());
-
-  const onChange = (event, selectedDate) => {
-    const currentDate = selectedDate;
-
-    let year = currentDate.getFullYear(); // get the year (yyyy)
-    let month = String(currentDate.getMonth() + 1).padStart(2, '0'); // get the month (mm) and pad with leading zero if necessary
-    let day = String(currentDate.getDate()).padStart(2, '0'); // get the day (dd) and pad with leading zero if necessary
-    let dateStr = year + '-' + month + '-' + day;
-    
-    setDate(currentDate);
-    setSearchText(dateStr);
-    handleSearch(dateStr);
-  };
-
-  const showMode = (currentMode) => {
-    DateTimePickerAndroid.open({
-      value: date,
-      onChange,
-      mode: currentMode,
-    });
-  };
-
-  const showDatepicker = () => {
-    showMode('date');
-  };
+  const [searchText, setSearchText] = useState('');
 
   useEffect(() => {
     getActivityLogs();
@@ -131,15 +104,15 @@ const LogsScreen = () => {
            <TouchableOpacity style={styles.exportButton} onPress={handleExport}>
             <Icon name="file-export" size={25} color={'#fff'} />
           </TouchableOpacity>
-          <TouchableOpacity onPress={showDatepicker}>
-          <Text style={styles.searchBox}>
-            {searchText}
-          </Text>
-          </TouchableOpacity>
-   
+          <TextInput
+            style={styles.searchBox}
+            placeholder="Search"
+            value={searchText}
+            onChangeText={handleSearch}
+          />
+       
         <TableHeader />
-
-        <FlatList data={tableData} renderItem={renderItem} style={styles.table}  ListEmptyComponent={() => <Text style={styles.noDataDisplay}>NO DATA FOUND</Text>}/>
+        <FlatList data={tableData} renderItem={renderItem} style={styles.table} />
       </ImageBackground>
   );
 }
@@ -155,10 +128,7 @@ const TableHeader = () => {
 };
 
 const styles = StyleSheet.create({
-  background: {
-    flex: 1,
-    resizeMode: "cover",
-  },
+
   textDisplay: {
     fontWeight: 'bold',
     fontSize: 20,
@@ -222,7 +192,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     margin: 10,
     paddingHorizontal: 8,
-    paddingVertical: 8,
     backgroundColor:'#f9f9f9'
   },
   exportButton: {
@@ -235,9 +204,6 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginRight: 10
   },
-  noDataDisplay:{
-    alignSelf: 'center'
-  }
 
 });
 

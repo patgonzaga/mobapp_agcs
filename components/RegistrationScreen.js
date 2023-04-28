@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, Image, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { Image, Text, TouchableOpacity, StyleSheet,ImageBackground } from 'react-native';
+import { Button, TextInput } from 'react-native-paper';
 import Spinner from 'react-native-loading-spinner-overlay/lib';
 import { AuthContext } from '../context/AuthContext';
 import axios from "axios";
 import { BASE_URL } from "../config";
 import { Picker } from '@react-native-picker/picker';
+import backgroundImage from '../assets/bg.jpg'; 
 
 function RegistrationScreen({navigation}) {
   const [fullname, setFullname] = useState('');
@@ -37,45 +39,32 @@ function RegistrationScreen({navigation}) {
     }
   };
   return (
-    <View style={styles.container}>
+    <ImageBackground source={backgroundImage} style={styles.background}>
       <Spinner visible={isLoading}/>
-        {/* <Image source={require('../assets/agcs_logo.png')} width={20} height={20}/> */}
+      {/* <Image style={styles.logo} source={require('../assets/agcs_logo.png')} width={50} height={50} /> */}
         <Text style={styles.welcome}>Plate Number Registration</Text>
-        
-      <View style={styles.inputView}>
         <TextInput
-          style={styles.inputView}
+          style={styles.input}
           placeholder="Enter fullname"
           placeholderTextColor="#003f5c"
           onChangeText={(text) => setFullname(text)}
           value={fullname}
         /> 
-      </View>
-      <View style={styles.inputView}>
         <TextInput
-          style={styles.inputView}
+          style={styles.input}
           placeholder="Enter address"
           placeholderTextColor="#003f5c"
           onChangeText={(text) => setAddress(text)}
           value={address}
         /> 
-      </View>
-      <View style={styles.inputView}>
         <TextInput
-          style={styles.inputView}
+          style={styles.input}
           placeholder="Enter contact no."
           placeholderTextColor="#003f5c"
           onChangeText={(text) => setContactNo(text)}
           value={contactNo}
         /> 
-      </View>
-        {/* <TextInput
-          style={styles.inputView}
-          placeholder="Enter rfid"
-          placeholderTextColor="#003f5c"
-          onChangeText={(text) => setRfid(text)}
-          value={rfid}
-        />  */}
+      
         <Picker
          style={styles.pickerView}
           selectedValue={rfid}
@@ -86,59 +75,53 @@ function RegistrationScreen({navigation}) {
           <Picker.Item key={option.id} label={option.rfid} value={option.rfid} />
         ))}
       </Picker>
-      <View style={styles.inputView}>
         <TextInput
-          style={styles.inputView}
+          style={styles.input}
           placeholder="Enter vehicle plate number"
           placeholderTextColor="#003f5c"
           onChangeText={(text) => setPlateNo(text)}
           value={plateNo}
         /> 
-      </View>
-      <View style={styles.inputView}>
         <TextInput
-          style={styles.inputView}
+          style={styles.input}
           placeholder="Enter license number"
           placeholderTextColor="#003f5c"
           onChangeText={(text) => setLicenseNo(text)}
           value={licenseNo}
         /> 
-      </View>
-      
-
-      <TouchableOpacity style={styles.registerBtn} onPress={handleRegisterPress}>
+      <TouchableOpacity style={styles.button} onPress={handleRegisterPress}>
         <Text style={styles.loginText}
         >Register</Text> 
       </TouchableOpacity>
       <TouchableOpacity onPress={() => navigation.navigate('Registered Plate List')}>
         <Text style={styles.switchText}>Click here to view registered plate lists.</Text>
       </TouchableOpacity>
-    </View>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  background: {
     flex: 1,
-    backgroundColor: 'lightgreen',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  inputView: {
-    backgroundColor: "lightgray",
-    borderRadius: 30,
-    width: "70%",
-    height: 45,
-    marginBottom: 20,
+    resizeMode: "cover",
     alignItems: "center",
+    justifyContent: "center"
   },
   pickerView: {
-    backgroundColor: "lightgray",
+    backgroundColor: "#ededed",
     borderRadius: 30,
-    width: "70%",
+    width: "80%",
     height: 30,
-    marginBottom: 20,
+    marginVertical: 5,
     alignItems: "center",
+  },
+  logo: {
+    width: 100,
+    height: 100,
+  },
+  input: {
+    width: '80%',
+    marginVertical: 5,
   },
   TextInput: {
     height: 50,
@@ -148,7 +131,7 @@ const styles = StyleSheet.create({
   },
   loginBtn:
   {
-    width:"70%",
+    width:"80%",
     borderRadius:25,
     height:50,
     alignItems:"center",
@@ -161,23 +144,28 @@ const styles = StyleSheet.create({
     marginTop: 30,
     marginBottom: 0,
   },
-  registerBtn:
-  {
-    width:"70%",
-    borderRadius:25,
-    height:50,
-    alignItems:"center",
-    justifyContent:"center",
-    backgroundColor:"green",
+  button: {
+    marginTop: 20,
+    width: '80%',
+    height: 50,
+    borderRadius: 15,
+    backgroundColor: '#018de5',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   welcome: {
-    marginBottom: 30,
-    fontSize: 30,
-    fontWeight: 'bold'
+    marginTop: 30,
+    marginBottom: 10,
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginLeft: '-17%',
+    color: 'lightblue'
   },
   switchText: {
     marginTop: 30,
+    marginBottom: 10,
+    color: '#018de5',
+    fontWeight: 'bold',
   },
 });
-
 export default RegistrationScreen;

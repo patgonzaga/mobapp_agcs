@@ -8,7 +8,7 @@ try {
     $pdo = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
 
     // prepare and execute 
-    $stmt2 = $pdo->prepare("SELECT a.*, b.fullname, b.rfid FROM logs a LEFT JOIN registered_plates b ON (a.plate_no = b.plate_no)");
+    $stmt2 = $pdo->prepare("SELECT a.*, b.fullname, b.rfid FROM logs a LEFT JOIN registered_plates b ON (a.plate_no = b.plate_no) ORDER BY a.id DESC");
     $stmt2->execute();
     $data = $stmt2->fetchAll(PDO::FETCH_ASSOC);
 

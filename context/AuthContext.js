@@ -63,7 +63,7 @@ export const AuthProvider = ({ children }) => {
         let userInfo = res.data;
         if(userInfo.status){
     
-          // console.log(userInfo)
+          console.log(userInfo)
           setUserInfo(userInfo);
           AsyncStorage.setItem('userInfo',JSON.stringify(userInfo));
           getTables();
@@ -161,6 +161,39 @@ export const AuthProvider = ({ children }) => {
   
   };
   
+  const updateProfile = async (formData) => {
+    setIsLoading(true);
+
+    try {
+      const apiUrl = 'https://agcsweb.online/image/upload';
+  
+      const config = {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'multipart/form-data',
+        },
+      };
+      const response = await axios.post(apiUrl, formData, config);
+  
+      // Handle success
+      if(response.data.status){
+        let userInfo = response.data;
+        setUserInfo(userInfo);
+        console.log(userInfo);
+
+        await AsyncStorage.setItem('userInfo', JSON.stringify(userInfo));
+      }
+      alert(response.data.msg)
+      
+    } catch (error) {
+      // Handle error
+      console.log(error);
+      // handle any error with setUserInfo and AsyncStorage.setItem calls
+    }
+    setIsLoading(false);
+
+  };
+  
   return (
     <AuthContext.Provider 
       value={{ 
@@ -171,7 +204,8 @@ export const AuthProvider = ({ children }) => {
         registerUser,
         registerPlate,
         login,
-        logout
+        logout,
+        updateProfile
       }}>{children}</AuthContext.Provider>
   );
 };
