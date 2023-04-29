@@ -2,7 +2,7 @@
   "expo": {
     "name": "AGCS",
     "slug": "AGCS",
-    "version": "1.0.0",
+    "version": "4.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -21,7 +21,8 @@
       "supportsTablet": true
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon.png",
+      "manifest": "./manifest.json"
     },
     "extra": {
       "eas": {
@@ -30,10 +31,15 @@
     },
     "scheme": "agcs",
     "android": {
+      "permissions": [
+        "INTERNET",
+        "ACCESS_NETWORK_STATE"
+      ],
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
+      "versionCode": 4.0,
       "package": "com.timi.agcs",
       "intentFilters": [
         {
